@@ -64,7 +64,7 @@ while true; do
     # What it does:
     #  1 Gets the XML document with the given tags
     #  2 Greps out the line with file_url with its random
-    #     numbers and directories
+    #     numbers and directories so there are no duplicates
     #  3 Cuts the file_url=" from the beginning of every line
     #  4 Appends https: in the beginning of every line
     get="curl -s 'https://gelbooru.com/index.php?page=dapi&s=post&tags=$tags&q=index&pid=$pid' \
