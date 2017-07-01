@@ -2,9 +2,30 @@
 
 ################### USAGE #################
 ##                                       ##
-##    sh gelbash.sh tag1 tag2 tag3 ...   ##
+##   sh gelbash.sh tag1 tag2 -tag3 ...   ##
 ##                                       ##
 ###########################################
+
+################### NOTES #################
+##                                       ##
+##            Note the -tag3.            ##
+##                                       ##
+##  This is if you want to exclude a tag ##
+##                                       ##
+###########################################
+
+################# EXAMPLE #################
+##                                       ##
+## sh gelbash.sh touhou -hat yellow_hair ##
+##                                       ##
+##    This will download touhous with    ##
+##        no hats and yellow hair        ##
+##                                       ##
+##      in the directory:                ##
+##         touhou+-hat+yellow_hair       ##
+##                                       ##
+###########################################
+
 
 # Take every parameter
 input=$*
