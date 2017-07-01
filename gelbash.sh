@@ -31,7 +31,7 @@
 
 
 # Take every parameter
-input=$*
+input="$@"
 
 # Replace spaces with + to fit the URL
 tags="${input// /+}"
@@ -41,9 +41,9 @@ tags="${input// /+}"
 #   a different way, it will probably
 #   re-download the same stuff but in
 #   a different directory
-mkdir -p $tags
+mkdir -p "$tags"
 
-echo Leeching everything with: $tags
+echo Leeching everything with: "$tags"
 echo Prepare yourself.
 
 # Page number
@@ -54,7 +54,7 @@ while true; do
 
     # Display current page number
     #   but will get lost due to wget output
-    echo -n $pid ' '
+    echo -n "$pid" ' '
 
     # Command in the variable to be used by eval
     #   TODO Make it so it saves it to a file
@@ -67,14 +67,15 @@ while true; do
     #     numbers and directories so there are no duplicates
     #  3 Cuts the file_url=" from the beginning of every line
     #  4 Appends https: in the beginning of every line
-    get="curl -s 'https://gelbooru.com/index.php?page=dapi&s=post&tags=$tags&q=index&pid=$pid' \
-        | grep -ioE 'file_url=\"\/\/assets\.gelbooru\.com\/images\/.{1,3}\/.{1,3}\/.{32}\.(jpg|png|jpeg|webm|gif)' \
-        | cut -c11-\
-        | sed -e 's/^/https:/'"
+    get=$(curl -s "https://gelbooru.com/index.php?page=dapi&s=post&tags=$tags&q=index&pid=$pid" \
+        | grep -ioE "file_url=\"\/\/assets\.gelbooru\.com\/images\/.{1,3}\/.{1,3}\/.{32}\.(jpg|png|jpeg|webm|gif)" \
+        | cut -c11- \
+        | sed -e "s/^/https:/" \
+        | tee image_$pid.files)
 #        > image_$pid.files"
 
     # Check if the output is alive.
-    if [[ ! $(eval "$get") ]]; then
+    if [[ ! ${get} ]]; then
         # If the output is empty (empty string)
         #   it will clean and break
         echo \nDone, no more files
@@ -86,7 +87,7 @@ while true; do
         #   NOTE Every file has 100 links
         #     due to Gelbooru's max limit being 100
         #     so, every 10 files is 1000 images downloaded
-        $(eval "$get" > image_$pid.files)
+        #"$get" > image_$pid.files
 
         # Downloads the files to an appropriate directory
         wget -nc -P $tags/ -c -i image_$pid.files
