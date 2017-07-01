@@ -12,6 +12,9 @@
 ##                                       ##
 ##  This is if you want to exclude a tag ##
 ##                                       ##
+##    For safety, you have to exclude    ##
+##             more tags                 ##
+##                                       ##
 ###########################################
 
 ################# EXAMPLE #################
