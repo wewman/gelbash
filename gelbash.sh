@@ -67,7 +67,7 @@ while true; do
     #       due to Gelbooru's max limit being 100
     #       so, every 10 files is 1000 images downloaded
     get=$(curl -s "https://gelbooru.com/index.php?page=dapi&s=post&tags=$tags&q=index&pid=$pid" \
-        | grep -ioE "file_url=\"\/\/assets.{1,1}\.gelbooru\.com\/images\/.{1,3}\/.{1,3}\/.{32}\.(jpg|png|jpeg|webm|gif)" \
+        | grep -ioE "file_url=\"\/\/assets.{1}\.gelbooru\.com\/images\/.{1,3}\/.{1,3}\/.{32}\.(jpg|png|jpeg|webm|gif)" \
         | cut -c11- \
         | sed -e "s/^/https:/" \
         | tee image_$pid.files)
