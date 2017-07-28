@@ -66,12 +66,24 @@ while true; do
     #     NOTE Every file has 100 links
     #       due to Gelbooru's max limit being 100
     #       so, every 10 files is 1000 images downloaded
-    get=$(curl -s "https://gelbooru.com/index.php?page=dapi&s=post&tags=$tags&q=index&pid=$pid" \
-        | grep -ioE "file_url=\"\/\/assets\.gelbooru\.com\/images\/.{1,3}\/.{1,3}\/.{32}\.(jpg|png|jpeg|webm|gif)" \
+    #get=$(curl -s "https://gelbooru.com/index.php?page=dapi&s=post&tags=$tags&q=index&pid=$pid" \
+    #    | grep -ioE "file_url=\"\/\/assets.{1}\.gelbooru\.com\/images\/.{1,3}\/.{1,3}\/.{32}\.(jpg|png|jpeg|webm|gif)" \
+    #    | cut -c11- \
+    #    | sed -e "s/^/https:/" \
+    #    | tee image_$pid.files)
+
+    get=$(curl -s "https://gelbooru.com/index.php?page=dapi&s=post&tags=touhou&q=index&pid=0" \
+        | grep -ioE "file_url=\"\/\/assets\.gelbooru\.com\/images\/.{1,3}\/.{1,3}\/.{32}\.(jpg|png|jpeg|webm|gif|swf)|tags=\".*" \
+        | sed 's/tags="//g' \
+        | sed -e '2~2 s/\".*//' \
+        | sed -r '2~2 s/[\ ]+/\+/g' \
+        | paste -sd ' \n' \
         | cut -c11- \
         | sed -e "s/^/https:/" \
-        | tee image_$pid.files)
-
+        | awk '{print $1 " " $2} /.(jpg|jpeg|png|gif|webm|swf)/ {system("echo "$1"|rev|cut -c1-4|rev")}' \
+        | paste -sd ' \n' \
+        | tee $tags/image_$pid.files
+    )
 
     # Check if the output is alive.
     if [[ ! ${get} ]]; then
@@ -83,7 +95,17 @@ while true; do
         break;
     else
         # Downloads the files to an appropriate directory
-        wget -nc -P $tags/ -c -O $tags/image_$pid.files
+        #wget -nc -P $tags/ -c -O $tags/image_$pid.files
+
+        while IFS= read -r url; do
+            link=$(echo $url | awk -F' ' '{print $1}')
+            fn=$(echo $url | awk -F' ' '{print $2}')
+            ext=$(echo $url | awk -F' ' '{print $3}')
+            filename="$fn"."$ext"
+            #This does not work because -O truncates the files
+            wget -O "$filename" "$link" -nc -P $tags/ -c
+            mv "$filename" $tags/
+        done < $tags/image_$pid.files
 
         # Increment and continue
         (( pid++ ))
