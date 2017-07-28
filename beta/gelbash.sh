@@ -72,7 +72,7 @@ while true; do
     #    | sed -e "s/^/https:/" \
     #    | tee image_$pid.files)
 
-    get=$(curl -s "https://gelbooru.com/index.php?page=dapi&s=post&tags=touhou&q=index&pid=0" \
+    get=$(curl -s "https://gelbooru.com/index.php?page=dapi&s=post&tags=$tags&q=index&pid=$pid" \
         | grep -ioE "file_url=\"\/\/assets\.gelbooru\.com\/images\/.{1,3}\/.{1,3}\/.{32}\.(jpg|png|jpeg|webm|gif|swf)|tags=\".*" \
         | sed 's/tags="//g' \
         | sed -e '2~2 s/\".*//' \
