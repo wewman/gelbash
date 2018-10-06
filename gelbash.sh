@@ -67,28 +67,26 @@ while true; do
     #       due to Gelbooru's max limit being 100
     #       so, every 10 files is 1000 images downloaded
     get=$(curl -s "https://gelbooru.com/index.php?page=dapi&s=post&tags=$tags&q=index&pid=$pid" \
-        | grep -ioE "file_url=\"https:\/\/[a-z0-9]+\.gelbooru\.com\/images\/.{1,3}\/.{1,3}\/.{32}\.(jpg|png|jpeg|webm|gif)" \
-        | cut -c11- \
+        | grep -ioE "https:\/\/[a-z0-9]+\.gelbooru\.com\/images\/.{1,3}\/.{1,3}\/.{32}\.(?:jpg|png|jpeg|webm|gif)" \
         | tee "$tags"/image_"$pid".files)
 #        | sed -e "s/^/https:/" \
 
 
     # Check if the output is alive.
-    if [[ ! ${get} ]]; then
-        # If the output is empty (empty string)
-        #   it will clean and break
-        echo Done, no more files
-        #echo Cleaning...
-        #rm image_*
-        break;
-    else
+    if [[ -n ${get} ]]; then
         # Downloads the files to an appropriate directory
         wget=$(wget -i "$tags"/image_"$pid".files -nc -P "$tags" -c)
-        printf "%02d\033[K\r $wget"
-
+        #printf "%02d\033[K\r $wget"
         # Increment and continue
         (( pid++ ))
-        continue;
+    else
+        echo Done, no more files
+        break;
+        # If the output is empty (empty string)
+        #   it will clean and break
+        #echo Cleaning...
+        #rm image_*
+        #break;
     fi
 
 done
