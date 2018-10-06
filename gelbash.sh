@@ -66,27 +66,33 @@ while true; do
     #     NOTE Every file has 100 links
     #       due to Gelbooru's max limit being 100
     #       so, every 10 files is 1000 images downloaded
-    get=$(curl -s "https://gelbooru.com/index.php?page=dapi&s=post&tags=$tags&q=index&pid=$pid" \
-        | grep -ioE "https:\/\/[a-z0-9]+\.gelbooru\.com\/images\/.{1,3}\/.{1,3}\/.{32}\.(?:jpg|png|jpeg|webm|gif)" \
-        | tee "$tags"/image_"$pid".files)
+    cmd='curl -s "https://gelbooru.com/index.php?page=dapi&s=post&tags=$tags&q=index&pid=$pid" \
+        | grep -ioE "(https:\/\/[a-z0-9]+\.gelbooru\.com\/images\/.{1,3}\/.{1,3}\/.{32}\.(?:jpg|png|jpeg|webm|gif))" \
+        | tee "$tags"/image_"$pid".files'
 #        | sed -e "s/^/https:/" \
+    get=$(eval "$cmd")
 
 
     # Check if the output is alive.
+    #if [[ -n ${get} ]]; then
+    #    # Downloads the files to an appropriate directory
+    #    #wget=$(wget -i "$tags"/image_"$pid".files -nc -P "$tags" -c)
+    #    #printf "%02d\033[K\r $wget"
+    #    # Increment and continue
+    #    (( pid++ ))
+    #else
+    #    echo Done, no more files
+    #    break;
+    #    # If the output is empty (empty string)
+    #    #   it will clean and break
+    #    #echo Cleaning...
+    #    #rm image_*
+    #    #break;
+    #fi
+
     if [[ -n ${get} ]]; then
-        # Downloads the files to an appropriate directory
         wget=$(wget -i "$tags"/image_"$pid".files -nc -P "$tags" -c)
-        #printf "%02d\033[K\r $wget"
-        # Increment and continue
-        (( pid++ ))
-    else
-        echo Done, no more files
-        break;
-        # If the output is empty (empty string)
-        #   it will clean and break
-        #echo Cleaning...
-        #rm image_*
-        #break;
+        let "pid++"
     fi
 
 done
